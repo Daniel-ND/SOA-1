@@ -1,16 +1,165 @@
 <!DOCTYPE html>
-
 <html lang="ru">
+
 <head>
-
     <meta charset="UTF-8">
-
-    <title> Пример простой страницы html</title>
+    <title>СОА Лабораторная №1</title>
+    <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="css/bootstrap-table.min.css">
+    <link rel="stylesheet" type="text/css" href="css/custom.css">
 </head>
 
 <body>
-
-Пример простой страницы - для того, чтобы посмотреть код, нажмите ctrl + U
+    <div id="app">
+        <h1>{{ timestamp }}</h1>
+        <result-table v-bind:labworks="labWorks" v-on:deletelab="deleteLabWork" v-on:editlab="editLabWork"></result-table>
+        <filters v-on:updatetable="updateTable"></filters>
+        <add-lab-work v-on:addlab="addLabWork" v-bind:personsList="personsList"
+                      v-bind:coordinatesList="coordinatesList" ref="mainform"></add-lab-work>
+        <additional-actions v-bind:cnt="cnt" v-bind:deleted_by_author="deleted_by_author"
+                v-on:calcbyminimalpoint="calcByMinimalPoint"
+                v-on:deletebyauthor="deleteByAuthor"></additional-actions>
+    </div>
+<!--    <script src="https://unpkg.com/vue"></script>-->
+<!--    <script src="https://unpkg.com/vue-resource"></script>-->
+    <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue-resource@1.5.3/dist/vue-resource.js"></script>
+    <script src="https://momentjs.com/downloads/moment-with-locales.min.js"></script>
+    <script src="components.js"></script>
+    <script>
+        // import Vue from 'vue'
+        new Vue({
+            el: '#app',
+            data: {
+                timestamp: '',
+                labWorks: [],
+                coordinatesList: [],
+                personsList: [],
+                cnt: '',
+                deleted_by_author: ''
+            },
+            methods: {
+                deleteLabWork: function (labWork) {
+                    this.$http.delete(
+                        '/lab-works/' + labWork.id
+                    ).then(
+                        (response) => {
+                            this.labWorks.splice(this.labWorks.indexOf(labWork), 1);
+                        },
+                        (error) => {
+                            if (error.status === 403 || error.status === 0) {
+                            }
+                        }
+                    );
+                },
+                addLabWork: function (labWork) {
+                    if (labWork.id) {
+                        this.$http.put(
+                            '/lab-works/',
+                            labWork
+                        ).then(
+                            (response) => {
+                                for (let i in this.labWorks) {
+                                    if (labWork.id === this.labWorks[i].id) {
+                                        this.labWorks.splice(i, 1);
+                                        break
+                                    }
+                                }
+                                this.labWorks.push(response.body);
+                            },
+                            (error) => {
+                                if (error.status === 403 || error.status === 0) {
+                                }
+                            }
+                        );
+                    } else {
+                        this.$http.post(
+                            '/lab-works',
+                            labWork
+                        ).then(
+                            (response) => {
+                                this.labWorks.push(response.body);
+                            },
+                            (error) => {
+                                if (error.status === 403 || error.status === 0) {
+                                }
+                            }
+                        );
+                    }
+                },
+                editLabWork: function (labWork) {
+                    this.$refs.mainform.$el.scrollIntoView({ behavior: 'smooth' });
+                    this.$refs.mainform.updateFields(labWork);
+                },
+                getNow: function() {
+                    const today = new Date();
+                    const date = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate();
+                    const time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
+                    const dateTime = date +' '+ time;
+                    this.timestamp = dateTime;
+                },
+                calcByMinimalPoint: function (minimal_point) {
+                    this.$http.get(
+                        '/calc_by_minimal_point/' + minimal_point
+                    ).then(
+                        (response) => {
+                            this.cnt = response.body;
+                        },
+                        (error) => {
+                            if (error.status === 403 || error.status === 0) {
+                            }
+                        }
+                    );
+                },
+                deleteByAuthor: function (author_name) {
+                    this.$http.delete(
+                        '/by_author/' + author_name
+                    ).then(
+                        (response) => {
+                            this.deleted_by_author = response.body;
+                        },
+                        (error) => {
+                            if (error.status === 403 || error.status === 0) {
+                            }
+                        }
+                    );
+                },
+                updateTable: function(filters_values) {
+                    let params = {}
+                    if (filters_values.id) params['id'] = filters_values.id
+                    if (filters_values.name) params['name'] = filters_values.name
+                    if (filters_values.coordinate_id) params['coordinate_id'] = filters_values.coordinate_id
+                    if (filters_values.minimalPoint) params['minimalPoint'] = filters_values.minimalPoint
+                    if (filters_values.difficulty) params['difficulty'] = filters_values.difficulty
+                    if (filters_values.person_id) params['person_id'] = filters_values.person_id
+                    this.$http.get(
+                        '/lab-works',{ params }).then(
+                        (response) => {
+                            this.labWorks = response.body;
+                        },
+                        (error) => {
+                            if (error.status === 403 || error.status === 0) {
+                            }
+                        }
+                    );
+                }
+            },
+            created: function() {
+                setInterval(this.getNow, 1000);
+                this.$http.get(
+                    '/lab-works'
+                ).then(
+                    (response) => {
+                        this.labWorks = response.body;
+                    },
+                    (error) => {
+                        if (error.status === 403 || error.status === 0) {
+                        }
+                    }
+                );
+            },
+        })
+    </script>
 </body>
 
 </html>
