@@ -6,6 +6,7 @@ import dto.FilterValuesDTO;
 import dto.LabWorkDTO;
 import dto.ReceivedLabWorkDTO;
 import service.LabWorkService;
+import utils.ZDTAdapter;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -20,15 +21,6 @@ import java.util.List;
 
 @WebServlet(value = "/lab-works/*")
 public class LabWorkServlet extends HttpServlet {
-
-    private class ZDTAdapter implements JsonSerializer<ZonedDateTime> {
-
-        @Override
-        public JsonElement serialize(ZonedDateTime zonedDateTime, Type type, JsonSerializationContext jsonSerializationContext) {
-            return new JsonPrimitive(zonedDateTime.toLocalDateTime().format(DateTimeFormatter.ISO_DATE));
-        }
-    }
-
     private Gson gson;
     private LabWorkService service;
 

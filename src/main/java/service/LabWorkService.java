@@ -60,6 +60,10 @@ public class LabWorkService {
         return LabWorkMapper.toDTO(labWork);
     }
 
+    public LabWorkDTO getById(Integer id) {
+        return LabWorkMapper.toDTO(repository.findById(id));
+    }
+
     public List<LabWorkDTO> getAll(FilterValuesDTO filterValues) {
         repository.setFilters(filterValues);
         List<LabWork> labWorks = repository.findAll();

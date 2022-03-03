@@ -4,9 +4,9 @@
 <head>
     <meta charset="UTF-8">
     <title>СОА Лабораторная №1</title>
-    <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
-    <link rel="stylesheet" type="text/css" href="css/bootstrap-table.min.css">
-    <link rel="stylesheet" type="text/css" href="css/custom.css">
+        <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
+        <link rel="stylesheet" type="text/css" href="css/bootstrap-table.min.css">
+        <link rel="stylesheet" type="text/css" href="css/custom.css">
 </head>
 
 <body>
@@ -20,14 +20,12 @@
                 v-on:calcbyminimalpoint="calcByMinimalPoint"
                 v-on:deletebyauthor="deleteByAuthor"></additional-actions>
     </div>
-<!--    <script src="https://unpkg.com/vue"></script>-->
-<!--    <script src="https://unpkg.com/vue-resource"></script>-->
+
     <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/vue-resource@1.5.3/dist/vue-resource.js"></script>
     <script src="https://momentjs.com/downloads/moment-with-locales.min.js"></script>
     <script src="components.js"></script>
     <script>
-        // import Vue from 'vue'
         new Vue({
             el: '#app',
             data: {
@@ -41,7 +39,7 @@
             methods: {
                 deleteLabWork: function (labWork) {
                     this.$http.delete(
-                        '/lab-works/' + labWork.id
+                        'rest/lab-works/' + labWork.id
                     ).then(
                         (response) => {
                             this.labWorks.splice(this.labWorks.indexOf(labWork), 1);
@@ -55,7 +53,7 @@
                 addLabWork: function (labWork) {
                     if (labWork.id) {
                         this.$http.put(
-                            '/lab-works/',
+                            'rest/lab-works/',
                             labWork
                         ).then(
                             (response) => {
@@ -74,7 +72,7 @@
                         );
                     } else {
                         this.$http.post(
-                            '/lab-works',
+                            'rest/lab-works',
                             labWork
                         ).then(
                             (response) => {
@@ -100,7 +98,7 @@
                 },
                 calcByMinimalPoint: function (minimal_point) {
                     this.$http.get(
-                        '/calc_by_minimal_point/' + minimal_point
+                        'rest/calc_by_minimal_point/' + minimal_point
                     ).then(
                         (response) => {
                             this.cnt = response.body;
@@ -113,7 +111,7 @@
                 },
                 deleteByAuthor: function (author_name) {
                     this.$http.delete(
-                        '/by_author/' + author_name
+                        'rest/by_author/' + author_name
                     ).then(
                         (response) => {
                             this.deleted_by_author = response.body;
@@ -133,7 +131,7 @@
                     if (filters_values.difficulty) params['difficulty'] = filters_values.difficulty
                     if (filters_values.person_id) params['person_id'] = filters_values.person_id
                     this.$http.get(
-                        '/lab-works',{ params }).then(
+                        'rest/lab-works',{ params }).then(
                         (response) => {
                             this.labWorks = response.body;
                         },
@@ -147,7 +145,7 @@
             created: function() {
                 setInterval(this.getNow, 1000);
                 this.$http.get(
-                    '/lab-works'
+                    'rest/lab-works'
                 ).then(
                     (response) => {
                         this.labWorks = response.body;
