@@ -9,34 +9,38 @@ import repository.CoordinatesRepository;
 import repository.LabWorkRepository;
 import repository.PersonRepository;
 
+import javax.ejb.Stateless;
 import java.util.ArrayList;
 import java.util.List;
 
-public class LabWorkService {
+@Stateless
+public class LabWorkServiceBean implements LabWorkService {
     private final LabWorkRepository repository;
     private final PersonRepository personRepository;
     private final CoordinatesRepository coordinatesRepository;
 
-    private static LabWorkService INSTANCE;
-    private LabWorkService() {
+    private static LabWorkServiceBean INSTANCE;
+    private LabWorkServiceBean() {
         repository = new LabWorkRepository();
         personRepository = new PersonRepository();
         coordinatesRepository = new CoordinatesRepository();
     }
 
-    public static synchronized LabWorkService getInstance() {
+    public static synchronized LabWorkServiceBean getInstance() {
         if(INSTANCE == null) {
-            INSTANCE = new LabWorkService();
+            INSTANCE = new LabWorkServiceBean();
         }
 
         return INSTANCE;
     }
 
+    @Override
     public void delete(Integer id) {
         LabWork labWork = repository.findById(id);
         repository.delete(labWork);
     }
 
+    @Override
     public LabWorkDTO update(ReceivedLabWorkDTO labWorkDTO) {
         LabWork labWorkToSave = repository.findById(labWorkDTO.getId());
         labWorkToSave.setAuthor(personRepository.findById(labWorkDTO.getAuthor()));
@@ -48,6 +52,7 @@ public class LabWorkService {
         return LabWorkMapper.toDTO(labWorkToSave);
     }
 
+    @Override
     public LabWorkDTO create(ReceivedLabWorkDTO labWorkDTO) {
         //validate
         LabWork labWork = new LabWork();
@@ -60,10 +65,12 @@ public class LabWorkService {
         return LabWorkMapper.toDTO(labWork);
     }
 
+    @Override
     public LabWorkDTO getById(Integer id) {
         return LabWorkMapper.toDTO(repository.findById(id));
     }
 
+    @Override
     public List<LabWorkDTO> getAll(FilterValuesDTO filterValues) {
         repository.setFilters(filterValues);
         List<LabWork> labWorks = repository.findAll();
@@ -74,28 +81,5 @@ public class LabWorkService {
         }
         repository.disableFilters();
         return labWorkDTOList;
-    }
-
-    public Long countMinimalPointGreaterThan(Double minimalPoint) {
-        return repository.countMinimalPointGreaterThan(minimalPoint);
-    }
-
-    public LabWorkDTO deleteSingleByAuthor(String author) {
-        List<LabWork> labWorks = repository.findAll();
-        LabWork labWorkToDelete = null;
-        for (LabWork labWork: labWorks) {
-            System.out.println(labWork.getName());
-            if (labWork.getAuthor().getName().equals(author)) {
-                labWorkToDelete = labWork;
-                System.out.println("kek");
-                break;
-            }
-        }
-        if (labWorkToDelete == null)
-            return null;
-        System.out.println("here");
-        repository.delete(labWorkToDelete);
-        System.out.println(labWorkToDelete);
-        return LabWorkMapper.toDTO(labWorkToDelete);
     }
 }

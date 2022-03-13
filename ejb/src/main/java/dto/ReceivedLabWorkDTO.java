@@ -4,9 +4,6 @@ import entity.Difficulty;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.json.bind.annotation.JsonbDateFormat;
-import java.time.ZonedDateTime;
-
 @Data
 @NoArgsConstructor
 public class ReceivedLabWorkDTO {

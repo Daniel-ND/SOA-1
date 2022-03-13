@@ -5,32 +5,26 @@ import com.google.gson.reflect.TypeToken;
 import dto.FilterValuesDTO;
 import dto.LabWorkDTO;
 import dto.ReceivedLabWorkDTO;
-import service.LabWorkService;
-import utils.ZDTAdapter;
+import service.LabWorkServiceBean;
 
 import javax.annotation.PostConstruct;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.*;
 import javax.ws.rs.core.*;
-import java.io.IOException;
 import java.lang.reflect.Type;
 import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @Path("lab-works")
 public class LabWorkController extends Application {
 
     private Gson gson;
-    private LabWorkService service;
+    private LabWorkServiceBean service;
 
     @PostConstruct
     public void init() {
         gson = new GsonBuilder().setPrettyPrinting()
                 .registerTypeAdapter(ZonedDateTime.class, new ZDTAdapter()).create();
-        service = LabWorkService.getInstance();
+        service = LabWorkServiceBean.getInstance();
     }
 
     @GET

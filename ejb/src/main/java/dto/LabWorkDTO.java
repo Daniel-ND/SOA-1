@@ -6,7 +6,6 @@ import lombok.NoArgsConstructor;
 
 import javax.json.bind.annotation.JsonbDateFormat;
 import java.time.ZonedDateTime;
-import java.util.Date;
 
 @Data
 @NoArgsConstructor
